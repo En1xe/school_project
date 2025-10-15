@@ -48,3 +48,6 @@ SUPPORT_FOLDER_PATH = Path(IMAGES_DIR / 'support').resolve()
 ADVICE_IMAGES_LIST = [str(item.resolve()) for item in ADVICE_FOLDER_PATH.iterdir()]
 MEMES_IMAGES_LIST = [str(item.resolve()) for item in MEMES_FOLDER_PATH.iterdir()]
 SUPPORT_IMAGES_LIST = [str(item.resolve()) for item in SUPPORT_FOLDER_PATH.iterdir()]
+
+CONTENT_IMAGE_WIDTH = 400
+CONTENT_IMAGE_HEIGHT = 300

@@ -1,30 +1,89 @@
 from tkinter import Button
 from PIL import Image, ImageTk
 
-from constants import FONT
+from constants import (
+    SUPPORT_IMAGES_LIST, 
+    ADVICE_IMAGES_LIST, 
+    MEMES_IMAGES_LIST, 
+    ADVICE_PAGE_STYLE, 
+    SUPPORT_PAGE_STYLE, 
+    MEMES_PAGE_STYLE,
+    FONT,
+    CONTENT_IMAGE_WIDTH, 
+    CONTENT_IMAGE_HEIGHT
+)
 
 
-def btn_bg_change(btn, bg_color):
+current_images_list = []
+current_image_index = 0
+
+def widget_bg_change(widget, bg_color):
+    """Обновляет стиль виджета при наведение"""
     def wrapper(e):
-        btn.configure(bg=bg_color)
+        widget.configure(bg=bg_color)
 
     return wrapper
 
 
-def show_main_page(home_page, main_page):
+def switch_to_other_page(current_page, new_page):
+    """Переключает страницу с одной на другую"""
     def wrapper():
-        home_page.pack_forget()
-        main_page.pack(fill='both', expand=True)
+        current_page.pack_forget()
+        new_page.pack(fill='both', expand=True)
     
     return wrapper
 
 
-def change_img(prev_btn, next_btn, btn_type):
-    from widgets import set_current_index, current_image_index, current_images_list, image_label
+def create_btn(master, style, image='', **kwargs):
+    """Создаёт стилизованную кнопку с эффектом наведения"""
+    btn = Button(
+        master, 
+        font=FONT, 
+        background=style['widgets_bg'],
+        activebackground=style['widgets_bg_active'],
+        activeforeground=style['widgets_fg_active'],
+        bd=0,
+        image=image,
+        **kwargs
+    )
+    btn.bind('<Enter>', widget_bg_change(btn, style['widgets_bg_hover']))
+    btn.bind('<Leave>', widget_bg_change(btn, style['widgets_bg']))
+
+    if image:
+        btn.image = image
+
+    return btn
+
+
+def set_current_image(img_label):
+    """Устанавливает текущее изображение в виджет Label с фиксированным размером"""
+    image_path = current_images_list[current_image_index]
+    image = Image.open(image_path)
+
+    image_copy = image.copy()
+    image_copy = image_copy.resize(
+        (CONTENT_IMAGE_WIDTH, CONTENT_IMAGE_HEIGHT), 
+        Image.Resampling.LANCZOS
+    )
+
+    current_image_tk = ImageTk.PhotoImage(image_copy)
+    
+    img_label.configure(image=current_image_tk)
+    img_label.image = current_image_tk
+
+
+def change_current_image(prev_btn, next_btn, btn_type):
+    """
+    Переключает текущее изображение в зависимости от типа кнопки (вперед или назад), 
+    отключает состояние кнопок при достижение границ списка изображений.
+    """
+    from widgets import image_label
+
+    global current_image_index
 
     step = 1 if btn_type == 'next' else -1
     index = current_image_index + step
-    set_current_index(index)
+    current_image_index = index
 
     if index >= len(current_images_list) - 1:
         next_btn.config(state='disabled')
@@ -36,54 +95,59 @@ def change_img(prev_btn, next_btn, btn_type):
     else:
         prev_btn.config(state='normal')
 
-    set_image(current_images_list, index, image_label)
+    set_current_image(image_label)
 
 
-def update_colours(
-    widgets_list,
-    widgets_bg,
-    widgets_bg_hover,
-    widgets_bg_active,
-    widgets_fg_active
-):
+def update_widgets_style(widgets_list, current_style):
+    """Обновляет цветовую схему виджетов согласно текущему стилю"""
     for widget in widgets_list:
         widget.config(
-            background=widgets_bg,
-            activebackground=widgets_bg_active,
-            activeforeground=widgets_fg_active,
+            background=current_style['widgets_bg'],
+            activebackground=current_style['widgets_bg_active'],
+            activeforeground=current_style['widgets_fg_active'],
         )
-        widget.bind('<Enter>', btn_bg_change(widget, widgets_bg_hover))
-        widget.bind('<Leave>', btn_bg_change(widget, widgets_bg))
+        widget.bind('<Enter>', widget_bg_change(widget, current_style['widgets_bg_hover']))
+        widget.bind('<Leave>', widget_bg_change(widget, current_style['widgets_bg']))
 
 
-def set_image(img_list, img_index, img_label):
-    image_path = img_list[img_index]
-    image = Image.open(image_path)
-
-    image_copy = image.copy()
-    image_copy.thumbnail((400, 300), Image.Resampling.LANCZOS)
-
-    current_image_tk = ImageTk.PhotoImage(image_copy)
+def on_selected_option_change(
+        selected_option, 
+        next_image_btn, 
+        previous_image_btn,
+        image_label,
+        main_page
+    ):
+    """
+    Обрабатывает изменение выбранной категории
     
-    img_label.configure(image=current_image_tk)
-    img_label.image = current_image_tk
+    Обновляет стиль интерфейса, список изображений и состояние кнопок. 
+    Сбрасывает индекс текущей изображения и применяет новую цветовую схему.
+    """
+    from widgets import current_style, widgets_list
 
+    global current_image_index, current_images_list
 
-def create_btn(master, bg, hover_bg, active_bg, active_fg, image='', **kwargs):
-    btn = Button(
-        master, 
-        font=FONT, 
-        background=bg,
-        activebackground=active_bg,
-        activeforeground=active_fg,
-        bd=0,
-        image=image,
-        **kwargs
+    new_value = selected_option.get()
+
+    match new_value:
+        case 'Мемы':
+            current_style = MEMES_PAGE_STYLE
+            current_images_list = MEMES_IMAGES_LIST
+        case 'Советы':
+            current_style = ADVICE_PAGE_STYLE
+            current_images_list = ADVICE_IMAGES_LIST
+        case 'Поддержка':
+            current_style = SUPPORT_PAGE_STYLE
+            current_images_list = SUPPORT_IMAGES_LIST
+
+    current_image_index = 0
+
+    next_image_btn.config(state='normal')
+    previous_image_btn.config(state='disabled')
+    main_page.config(background=current_style['bg'])
+
+    update_widgets_style(
+        widgets_list,
+        current_style
     )
-    btn.bind('<Enter>', btn_bg_change(btn, hover_bg))
-    btn.bind('<Leave>', btn_bg_change(btn, bg))
-
-    if image:
-        btn.image = image
-
-    return btn
+    set_current_image(image_label)
