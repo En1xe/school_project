@@ -3,7 +3,7 @@ from pages import create_home_page_widgets, create_main_page_widgets
 
 
 root = Tk()
-root.title('Title')
+root.title('Без паники')
 root.minsize(500, 400)
 
 create_main_page_widgets(root)

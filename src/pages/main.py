@@ -1,8 +1,8 @@
 from tkinter import OptionMenu, Frame, PhotoImage, Label, StringVar
 
-from constants import ICONS_DIR, CATEGORY_OPTIONS, FONT, ADVICE_PAGE_STYLE
+from constants import ICONS_DIR, CATEGORY_OPTIONS, FONT, ADVICE_PAGE_STYLE, FONT_SMALL
 from core.common import create_btn
-from core.main import on_selected_option_change, change_current_image
+from core.main import on_selected_option_change, change_current_image_and_text
 
 
 current_style = ADVICE_PAGE_STYLE
@@ -17,8 +17,20 @@ def create_main_page_widgets(root):
     left_arrow_picture = PhotoImage(file=str(ICONS_DIR / 'arrow-left.png'))
     right_arrow_picture = PhotoImage(file=str(ICONS_DIR / 'arrow-right.png'))
 
-    image_label = Label(main_page)
-    image_label.pack(pady=20, padx=40)
+    image_label = Label(main_page, width=400, height=300)
+    image_label.pack(padx=20, pady=10, side='top')
+    image_label.propagate(False)
+
+    label_under_image_frame = Frame(main_page, width=400)
+    label_under_image_frame.pack(pady=(0, 40), side='top')
+
+    label_under_image = Label(
+        label_under_image_frame,
+        font=FONT_SMALL,
+        wraplength=380,
+        justify='left'
+    )
+    label_under_image.pack(fill='both', expand=True, padx=10, pady=10)
 
     previous_image_btn = create_btn(
         master=main_page,
@@ -40,7 +52,9 @@ def create_main_page_widgets(root):
             next_image_btn, 
             previous_image_btn,
             image_label,
-            main_page
+            main_page,
+            label_under_image,
+            label_under_image_frame
         )
     )
 
@@ -70,14 +84,18 @@ def create_main_page_widgets(root):
     next_image_btn.pack(side='left', expand=True)
     widgets_list.append(next_image_btn)
 
-    next_image_btn.config(command=lambda: change_current_image(
-        previous_image_btn, 
-        next_image_btn, 
+    next_image_btn.config(command=lambda: change_current_image_and_text(
+        previous_image_btn,
+        next_image_btn,
+        selected_option,
+        label_under_image,
         'next'
     ))
-    previous_image_btn.config(command=lambda: change_current_image(
+    previous_image_btn.config(command=lambda: change_current_image_and_text(
         previous_image_btn, 
-        next_image_btn, 
+        next_image_btn,
+        selected_option,
+        label_under_image,
         'previous'
     ))
 

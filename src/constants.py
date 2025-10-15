@@ -4,8 +4,10 @@ from pathlib import Path
 BASE_DIR = Path(__file__).parent
 IMAGES_DIR = BASE_DIR / 'assets' / 'images'
 ICONS_DIR = BASE_DIR / 'assets' / 'icons'
+PHRASES_DIR = BASE_DIR / 'assets' / 'phrases'
 
 FONT = ('Arial', 20)
+FONT_SMALL = ('Arial', 14)
 
 CATEGORY_OPTIONS = ['Советы', 'Мемы', 'Поддержка']
 
@@ -51,3 +53,11 @@ SUPPORT_IMAGES_LIST = [str(item.resolve()) for item in SUPPORT_FOLDER_PATH.iterd
 
 CONTENT_IMAGE_WIDTH = 400
 CONTENT_IMAGE_HEIGHT = 300
+
+PHRASES_FOLDER_PATH = PHRASES_DIR.resolve()
+
+PHRASES_LIST = []
+
+for phrase_path in PHRASES_FOLDER_PATH.iterdir():
+    with open(phrase_path) as phrase:
+        PHRASES_LIST.append(phrase.read().replace('\n', ' '))
