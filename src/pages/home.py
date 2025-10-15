@@ -1,6 +1,6 @@
 from tkinter import Frame, Label
 
-from constants import HOME_PAGE_STYLE
+from constants import HOME_PAGE_STYLE, README_TEXT
 from core.common import create_btn, switch_to_other_page
 
 
@@ -10,7 +10,7 @@ def create_home_page_widgets(root):
 
     global home_page
 
-    with open('README.md') as readme:
+    with open(README_TEXT) as readme:
         readme_text = readme.read()
 
     home_page = Frame(root, background=HOME_PAGE_STYLE['bg'])

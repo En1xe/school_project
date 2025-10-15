@@ -61,3 +61,5 @@ PHRASES_LIST = []
 for phrase_path in PHRASES_FOLDER_PATH.iterdir():
     with open(phrase_path) as phrase:
         PHRASES_LIST.append(phrase.read().replace('\n', ' '))
+
+README_TEXT = BASE_DIR.parent / 'README.md'
