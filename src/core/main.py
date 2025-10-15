@@ -1,6 +1,6 @@
-from tkinter import Button
 from PIL import Image, ImageTk
 
+from .common import widget_bg_hover
 from constants import (
     SUPPORT_IMAGES_LIST, 
     ADVICE_IMAGES_LIST, 
@@ -8,7 +8,6 @@ from constants import (
     ADVICE_PAGE_STYLE, 
     SUPPORT_PAGE_STYLE, 
     MEMES_PAGE_STYLE,
-    FONT,
     CONTENT_IMAGE_WIDTH, 
     CONTENT_IMAGE_HEIGHT
 )
@@ -16,44 +15,6 @@ from constants import (
 
 current_images_list = []
 current_image_index = 0
-
-def widget_bg_change(widget, bg_color):
-    """Обновляет стиль виджета при наведение"""
-    def wrapper(e):
-        widget.configure(bg=bg_color)
-
-    return wrapper
-
-
-def switch_to_other_page(current_page, new_page):
-    """Переключает страницу с одной на другую"""
-    def wrapper():
-        current_page.pack_forget()
-        new_page.pack(fill='both', expand=True)
-    
-    return wrapper
-
-
-def create_btn(master, style, image='', **kwargs):
-    """Создаёт стилизованную кнопку с эффектом наведения"""
-    btn = Button(
-        master, 
-        font=FONT, 
-        background=style['widgets_bg'],
-        activebackground=style['widgets_bg_active'],
-        activeforeground=style['widgets_fg_active'],
-        bd=0,
-        image=image,
-        **kwargs
-    )
-    btn.bind('<Enter>', widget_bg_change(btn, style['widgets_bg_hover']))
-    btn.bind('<Leave>', widget_bg_change(btn, style['widgets_bg']))
-
-    if image:
-        btn.image = image
-
-    return btn
-
 
 def set_current_image(img_label):
     """Устанавливает текущее изображение в виджет Label с фиксированным размером"""
@@ -77,7 +38,7 @@ def change_current_image(prev_btn, next_btn, btn_type):
     Переключает текущее изображение в зависимости от типа кнопки (вперед или назад), 
     отключает состояние кнопок при достижение границ списка изображений.
     """
-    from widgets import image_label
+    from pages.main import image_label
 
     global current_image_index
 
@@ -106,8 +67,8 @@ def update_widgets_style(widgets_list, current_style):
             activebackground=current_style['widgets_bg_active'],
             activeforeground=current_style['widgets_fg_active'],
         )
-        widget.bind('<Enter>', widget_bg_change(widget, current_style['widgets_bg_hover']))
-        widget.bind('<Leave>', widget_bg_change(widget, current_style['widgets_bg']))
+        widget.bind('<Enter>', widget_bg_hover(widget, current_style['widgets_bg_hover']))
+        widget.bind('<Leave>', widget_bg_hover(widget, current_style['widgets_bg']))
 
 
 def on_selected_option_change(
@@ -123,7 +84,7 @@ def on_selected_option_change(
     Обновляет стиль интерфейса, список изображений и состояние кнопок. 
     Сбрасывает индекс текущей изображения и применяет новую цветовую схему.
     """
-    from widgets import current_style, widgets_list
+    from pages.main import current_style, widgets_list
 
     global current_image_index, current_images_list
 

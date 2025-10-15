@@ -2,8 +2,8 @@ from pathlib import Path
 
 
 BASE_DIR = Path(__file__).parent
-IMAGES_DIR = BASE_DIR / 'images'
-ICONS_DIR = BASE_DIR / 'icons'
+IMAGES_DIR = BASE_DIR / 'assets' / 'images'
+ICONS_DIR = BASE_DIR / 'assets' / 'icons'
 
 FONT = ('Arial', 20)
 

@@ -1,34 +1,12 @@
 from tkinter import OptionMenu, Frame, PhotoImage, Label, StringVar
 
-from constants import (
-    ADVICE_PAGE_STYLE, 
-    HOME_PAGE_STYLE, 
-    ICONS_DIR, 
-    CATEGORY_OPTIONS, 
-    FONT, 
-)
-from actions import switch_to_other_page, create_btn, change_current_image, on_selected_option_change
+from constants import ICONS_DIR, CATEGORY_OPTIONS, FONT, ADVICE_PAGE_STYLE
+from core.common import create_btn
+from core.main import on_selected_option_change, change_current_image
 
 
 current_style = ADVICE_PAGE_STYLE
 widgets_list = []
-
-def create_home_page_widgets(root):
-    """Создаёт виджеты стартовой страницы"""
-    home_page = Frame(root, background=HOME_PAGE_STYLE['bg'])
-    home_page.pack(fill='both', expand=True)
-
-    readme_text = Frame(home_page, background='white', width=300, height=200)
-    readme_text.pack(fill='both', pady=20, padx=80, expand=True)
-
-    start_btn = create_btn(
-        master=home_page,
-        text='Начать',
-        style=HOME_PAGE_STYLE,
-        command=switch_to_other_page(home_page, main_page)
-    )
-    start_btn.pack(expand=True, pady=20)
-
 
 def create_main_page_widgets(root):
     """Создает виджеты основной рабочей страницы"""
@@ -55,13 +33,16 @@ def create_main_page_widgets(root):
     widgets_list.append(previous_image_btn)
 
     selected_option = StringVar(main_page)
-    selected_option.trace_add('write', lambda *args: on_selected_option_change(
-        selected_option, 
-        next_image_btn, 
-        previous_image_btn,
-        image_label,
-        main_page
-    ))
+    selected_option.trace_add(
+        'write', 
+        lambda *args: on_selected_option_change(
+            selected_option, 
+            next_image_btn, 
+            previous_image_btn,
+            image_label,
+            main_page
+        )
+    )
 
     option_menu = OptionMenu(
         main_page, 
@@ -89,7 +70,15 @@ def create_main_page_widgets(root):
     next_image_btn.pack(side='left', expand=True)
     widgets_list.append(next_image_btn)
 
-    next_image_btn.config(command=lambda: change_current_image(previous_image_btn, next_image_btn, 'next'))
-    previous_image_btn.config(command=lambda: change_current_image(previous_image_btn, next_image_btn, 'previous'))
+    next_image_btn.config(command=lambda: change_current_image(
+        previous_image_btn, 
+        next_image_btn, 
+        'next'
+    ))
+    previous_image_btn.config(command=lambda: change_current_image(
+        previous_image_btn, 
+        next_image_btn, 
+        'previous'
+    ))
 
     selected_option.set(CATEGORY_OPTIONS[0])
